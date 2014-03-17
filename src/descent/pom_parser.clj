@@ -181,12 +181,6 @@
         dep-management (process-dependency-management pom)
         deps (process-dependencies-section pom)
         dependencies (merge dep-management deps)]
-    {:name project-name :version version :dependencies dependencies}))
+    {:project-name project-name :version version :dependencies dependencies}))
 
-;(process-pom "resources/pom.xml")
-
-
-
-
-
-
+;(def p (process-pom "resources/pom.xml"))
