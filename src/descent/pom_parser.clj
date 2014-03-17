@@ -92,10 +92,11 @@
   [pom]
   (if (pom-has-properties? pom)
     (let [properties (get-properties-from-pom pom)
-          properties-map (transient {})]
+          properties-map (atom {})]
       (doseq [p properties]
-        (assoc! properties-map (keyword (parse-name (:tag p))) (first (:content p))))
-      (persistent! properties-map))
+        ;(println (parse-name (:tag p)) " -> " (first (:content p)))
+        (swap! properties-map assoc (keyword (parse-name (:tag p))) (first (:content p))))
+      (deref properties-map))
     nil))
 
 
@@ -181,6 +182,9 @@
         dep-management (process-dependency-management pom)
         deps (process-dependencies-section pom)
         dependencies (merge dep-management deps)]
-    {:project-name project-name :version version :dependencies dependencies}))
+    {:name project-name :version version :dependencies dependencies}))
 
-;(def p (process-pom "resources/pom.xml"))
+
+
+
+
