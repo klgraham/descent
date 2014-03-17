@@ -225,10 +225,14 @@
 ;;; Process entire pom
 
 (defn process-pom
+  "Given a pom file, extract it's dependencies and versions and place in a hash-map."
   [pom]
-  (let [dep-management (process-dependency-management pom)
-        deps (process-dependencies-section pom)]
-    (merge dep-management deps)))
+  (let [project-name (get-library-name-from-pom pom)
+        version (get-library-version-from-pom pom)
+        dep-management (process-dependency-management pom)
+        deps (process-dependencies-section pom)
+        dependencies (merge dep-management deps)]
+    {:name project-name :version version :dependencies dependencies}))
 
 (process-pom pom)
 
