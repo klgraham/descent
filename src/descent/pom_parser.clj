@@ -1,6 +1,5 @@
 (ns descent.pom-parser
-  (:use [clojure.xml :only (parse)])
-  (:require [clojure.java.io :as io]))
+  (:use [clojure.xml :only (parse)]))
 
 
 ;;;; Access the project dependencies through the following logic:
