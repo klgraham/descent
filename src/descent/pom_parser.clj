@@ -220,3 +220,20 @@
     nil))
 
 (process-dependencies-section pom)
+
+
+;;; Process entire pom
+
+(defn process-pom
+  [pom]
+  (let [dep-management (process-dependency-management pom)
+        deps (process-dependencies-section pom)]
+    (merge dep-management deps)))
+
+(process-pom pom)
+
+
+
+
+
+
