@@ -6,6 +6,7 @@
 
 (def pom (load-pom "resources/pom.xml"))
 
+
 ;(:tag pom)
 ;(:attrs pom)
 
@@ -200,3 +201,22 @@
 
 ;;; Functions to process dependencies
 
+(defn- get-deps-from-dependencies-section
+  "Given a pom, extract the dependencies from dependencies section."
+  [pom]
+  (-> (filter #(tag-equals? % :dependencies) (:content pom))
+      first :content))
+
+(get-deps-from-dependencies-section pom)
+
+
+(defn process-dependencies-section
+  [pom]
+  (if (pom-has-dependencies? pom)
+    (let [properties (get-dependencies-from-properties pom)
+          deps (get-deps-from-dependencies-section pom)
+          deps-seq (map #(make-dependency-version-pair % properties) deps)]
+      (into {} deps-seq))
+    nil))
+
+(process-dependencies-section pom)
