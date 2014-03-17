@@ -2,42 +2,6 @@
   (:use [clojure.xml :only (parse)])
   (:require [clojure.java.io :as io]))
 
-(defn load-pom [pom-location] (parse (java.io.File. pom-location)))
-
-(def pom (load-pom "resources/pom.xml"))
-
-
-;(:tag pom)
-;(:attrs pom)
-
-;; :content once takes us to the 1st level of data
-;(:content pom)
-
-;(def library (-> pom :content (nth 2) :content first))
-;(def version (-> pom :content (nth 5) :content first))
-
-(defn- get-library-name-from-pom
-  "Given a pom, extract the project name."
-  [pom]
-  (-> pom :content (nth 2) :content first))
-
-(defn- get-library-version-from-pom
-  "Given a pom, extract the project version."
-  [pom]
-  (-> pom :content (nth 5) :content first))
-
-;(get-properties-from-pom pom)
-
-;(def properties (get-properties-from-pom pom))
-;(first properties)
-
-
-
-;(contains-version? {:tag :apple.hh})
-;(contains-version? {:tag :rivulet.version})
-
-;(filter-out-properties-without-version properties)
-
 
 ;;;; Access the project dependencies through the following logic:
 ;;;;   1. if properties section exists, place versions in a hash-map
@@ -45,11 +9,28 @@
 ;;;;      if dependencyManagement is absent, just process dependencies instead
 ;;;;   3. extract version nmumbers from dependencies and if needed use the properties map
 
+
+;;; Load the pom.xml file and get basic info from it
+
+(defn load-pom [pom-location] (parse (java.io.File. pom-location)))
+
+
+(defn- get-library-name-from-pom
+  "Given a pom, extract the project name."
+  [pom]
+  (-> pom :content (nth 2) :content first))
+
+
+(defn- get-library-version-from-pom
+  "Given a pom, extract the project version."
+  [pom]
+  (-> pom :content (nth 5) :content first))
+
+
 ;;; Functions to check if certain pom sections exist
 
 (defn- tag-equals? [m tag] (= (:tag m) tag))
 
-;(get-in pom [:content])
 
 (defn- pom-has-properties?
   [pom]
@@ -107,7 +88,7 @@
       (subs 1)))
 
 
-(defn get-dependencies-from-properties
+(defn- get-dependencies-from-properties
   "Given the properties portion of a pom, return a seq of "
   [pom]
   (if (pom-has-properties? pom)
@@ -118,8 +99,6 @@
       (persistent! properties-map))
     nil))
 
-(get-dependencies-from-properties pom)
-
 
 ;;; Functions to process dependencyManagement
 
@@ -128,8 +107,6 @@
   [pom]
   (-> (filter #(tag-equals? % :dependencyManagement) (:content pom))
       first :content first :content))
-
-(get-deps-from-dependency-management pom)
 
 
 (defn- first-char-is-$? [s] (= "$" (subs s 0 1)))
@@ -145,14 +122,12 @@
           first
           keyword))))
 
-(parse-version-variable "${dep1.version}")
 
 (defn- parse-group-id
   [gid]
   (-> (clojure.string/split gid #"\.")
       last keyword))
 
-(parse-group-id "a.b.c")
 
 (defn- make-dependency-version-pair
   [m properties]
@@ -167,27 +142,7 @@
        version)]))
 
 
-(def x {:tag :dependency
-        :attrs nil
-        :content [{:tag :groupId
-                   :attrs nil
-                   :content ["com.company.dep1"]}
-
-                  {:tag :artifactId
-                   :attrs nil
-                   :content ["dep1-core"]}
-
-                  {:tag :version
-                   :attrs nil
-                   :content ["${dep1.version}"]}
-
-                  {:tag :type
-                   :attrs nil
-                   :content ["tar.gz"]}]})
-
-(make-dependency-version-pair x {:dep1 "1.0.0-SNAPSHOT"})
-
-(defn process-dependency-management
+(defn- process-dependency-management
   [pom]
   (if (pom-has-dependencyManagement? pom)
     (let [properties (get-dependencies-from-properties pom)
@@ -195,8 +150,6 @@
           deps-seq (map #(make-dependency-version-pair % properties) deps)]
       (into {} deps-seq))
     nil))
-
-(process-dependency-management pom)
 
 
 ;;; Functions to process dependencies
@@ -207,10 +160,8 @@
   (-> (filter #(tag-equals? % :dependencies) (:content pom))
       first :content))
 
-(get-deps-from-dependencies-section pom)
 
-
-(defn process-dependencies-section
+(defn- process-dependencies-section
   [pom]
   (if (pom-has-dependencies? pom)
     (let [properties (get-dependencies-from-properties pom)
@@ -219,22 +170,21 @@
       (into {} deps-seq))
     nil))
 
-(process-dependencies-section pom)
-
 
 ;;; Process entire pom
 
 (defn process-pom
   "Given a pom file, extract it's dependencies and versions and place in a hash-map."
-  [pom]
-  (let [project-name (get-library-name-from-pom pom)
+  [path-to-pom]
+  (let [pom (load-pom path-to-pom)
+        project-name (get-library-name-from-pom pom)
         version (get-library-version-from-pom pom)
         dep-management (process-dependency-management pom)
         deps (process-dependencies-section pom)
         dependencies (merge dep-management deps)]
     {:name project-name :version version :dependencies dependencies}))
 
-(process-pom pom)
+;(process-pom "resources/pom.xml")
 
 
 
