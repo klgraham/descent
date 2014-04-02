@@ -173,6 +173,11 @@
 
 ;;; Process entire pom
 
+(defn- parse-project-name [project-name]
+  (-> (clojure.string/split project-name #"::")
+      first
+      clojure.string/trim))
+
 (defn process-pom
   "Given a pom file, extract it's dependencies and versions and place in a hash-map."
   [path-to-pom]
@@ -182,9 +187,6 @@
         dep-management (process-dependency-management pom)
         deps (process-dependencies-section pom)
         dependencies (merge dep-management deps)]
-    {:project-name project-name :project-version version :dependencies dependencies}))
-
-
-
-
-
+    {:project-name (parse-project-name project-name)
+     :project-version version
+     :dependencies dependencies}))

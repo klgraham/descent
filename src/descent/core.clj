@@ -14,7 +14,7 @@
   (let [deps-map (parser/process-pom path-to-pom)
         graph (g/create-graph deps-map)
         image (g/create-image graph)
-        name (str (:name deps-map) "-" (:version deps-map))]
+        graph-name (str (:project-name deps-map) "-" (:project-version deps-map))]
     (pprint deps-map)
     (g/save-image-to-file image output-file)
-    (g/save-graph-to-file graph (str name ".graph"))))
+    (g/save-graph-to-file graph (str graph-name ".graph"))))
