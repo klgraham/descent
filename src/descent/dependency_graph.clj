@@ -8,10 +8,10 @@
 
 (defn create-graph
   "Places dependencies into a hash-map form used by Rhizome."
-  [{:keys [project-name version dependencies]}]
-  (let [name (str project-name + "-" version)
-        dep-names (into [] (map #(keyword (str (key %) "-" (val %))) dependencies))
-        nodes (hash-map (keyword name) dep-names)
+  [{:keys [project-name project-version dependencies]}]
+  (let [graph-name (str project-name "-" project-version)
+        dep-names (into [] (map #(str (name (key %)) "-" (val %)) dependencies))
+        nodes (hash-map graph-name dep-names)
         dep-nodes (zipmap dep-names (repeat (count dep-names) []))]
     (merge nodes dep-nodes)))
 

@@ -182,7 +182,7 @@
         dep-management (process-dependency-management pom)
         deps (process-dependencies-section pom)
         dependencies (merge dep-management deps)]
-    {:name project-name :version version :dependencies dependencies}))
+    {:project-name project-name :project-version version :dependencies dependencies}))
 
 
 
