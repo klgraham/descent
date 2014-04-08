@@ -1,7 +1,3 @@
 (ns descent.core-test
-  (:require [clojure.test :refer :all]
-            [descent.core :refer :all]))
+  (:require [midje.sweet :refer :all]))
 
-(deftest a-test
-  (testing "FIXME, I fail."
-    (is (= 0 1))))

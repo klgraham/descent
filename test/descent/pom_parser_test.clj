@@ -1,7 +1,7 @@
 (ns descent.pom-parser-test
   (:require [clojure.java.io :as io]
-            [descent.pom-parser :as parser])
-  (:use [midje.sweet]))
+            [descent.pom-parser :as parser]
+            [midje.sweet :refer :all]))
 
 (def path-to-pom (-> "test_pom.xml" io/resource .getPath))
 

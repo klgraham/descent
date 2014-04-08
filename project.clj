@@ -6,9 +6,10 @@
 
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [rhizome "0.2.0"]
-                 [midje "1.6.2"]]
+                 [midje "1.5.1"]]
 
   :main ^:skip-aot descent.core
   :plugins [[codox "0.6.7"]]
   :target-path "target/%s"
-  :profiles {:uberjar {:aot :all}})
+  :profiles {:uberjar {:aot :all}
+             :dev {:dependencies [[midje "1.5.1"]]}})
