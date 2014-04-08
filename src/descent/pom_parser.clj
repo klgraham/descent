@@ -14,13 +14,13 @@
 (defn load-pom [pom-location] (parse (java.io.File. pom-location)))
 
 
-(defn- get-library-name-from-pom
+(defn get-library-name-from-pom
   "Given a pom, extract the project name."
   [pom]
   (-> pom :content (nth 2) :content first))
 
 
-(defn- get-library-version-from-pom
+(defn get-library-version-from-pom
   "Given a pom, extract the project version."
   [pom]
   (-> pom :content (nth 5) :content first))
@@ -31,21 +31,21 @@
 (defn- tag-equals? [m tag] (= (:tag m) tag))
 
 
-(defn- pom-has-properties?
+(defn pom-has-properties?
   [pom]
   (-> (filter #(tag-equals? % :properties) (:content pom))
       count
       (> 0)))
 
 
-(defn- pom-has-dependencyManagement?
+(defn pom-has-dependencyManagement?
   [pom]
   (-> (filter #(tag-equals? % :dependencyManagement) (:content pom))
       count
       (> 0)))
 
 
-(defn- pom-has-dependencies?
+(defn pom-has-dependencies?
   [pom]
   (-> (filter #(tag-equals? % :dependencies) (:content pom))
       count
@@ -54,7 +54,7 @@
 
 ;;; Functions to process the properties section
 
-(defn- contains-version?
+(defn contains-version?
   "Checks a given member of the pom properties to see if it contains version number."
   [coll]
   (let [tag (:tag coll)
@@ -71,7 +71,7 @@
   (filter contains-version? coll))
 
 
-(defn- get-properties-from-pom
+(defn get-properties-from-pom
   "Given a pom, extract the properties and see if they contain dependency version data."
   [pom]
   (-> (filter #(tag-equals? % :properties) (:content pom))
@@ -87,7 +87,7 @@
       (subs 1)))
 
 
-(defn- get-dependencies-from-properties
+(defn get-dependencies-from-properties
   "Given the properties portion of a pom, return a seq of "
   [pom]
   (if (pom-has-properties? pom)
@@ -102,7 +102,7 @@
 
 ;;; Functions to process dependencyManagement
 
-(defn- get-deps-from-dependency-management
+(defn get-deps-from-dependency-management
   "Given a pom, extract the dependencies from dependencyManagement."
   [pom]
   (-> (filter #(tag-equals? % :dependencyManagement) (:content pom))
@@ -142,7 +142,7 @@
        version)]))
 
 
-(defn- process-dependency-management
+(defn process-dependency-management
   [pom]
   (if (pom-has-dependencyManagement? pom)
     (let [properties (get-dependencies-from-properties pom)
@@ -154,14 +154,14 @@
 
 ;;; Functions to process dependencies
 
-(defn- get-deps-from-dependencies-section
+(defn get-deps-from-dependencies-section
   "Given a pom, extract the dependencies from dependencies section."
   [pom]
   (-> (filter #(tag-equals? % :dependencies) (:content pom))
       first :content))
 
 
-(defn- process-dependencies-section
+(defn process-dependencies-section
   [pom]
   (if (pom-has-dependencies? pom)
     (let [properties (get-dependencies-from-properties pom)
