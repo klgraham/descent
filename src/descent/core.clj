@@ -9,12 +9,10 @@
   them into Datomic (so they're viewable over time), generate a graph
   visualization and then print the graph to a file.
 
-  Usage: descent.core: <path-to-pom> <output-file> [optional arguments]"
-  [path-to-pom output-file & args]
-  (let [deps-map (parser/process-pom path-to-pom)
-        graph (g/create-graph deps-map)
-        image (g/create-image graph)
-        graph-name (str (:project-name deps-map) "-" (:project-version deps-map))]
-    (pprint deps-map)
+  Usage: descent.core: <directory with poms> <output-file> [optional arguments]"
+  [poms-dir output-file & args]
+  (let [graph (g/build-graph poms-dir)
+        image (g/create-image graph)]
+    ;(pprint graph)
     (g/save-image-to-file image output-file)
-    (g/save-graph-to-file graph (str graph-name ".graph"))))
+    (g/save-graph-to-file graph (str "project" ".graph"))))

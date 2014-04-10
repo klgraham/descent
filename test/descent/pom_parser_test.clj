@@ -3,7 +3,8 @@
             [descent.pom-parser :as parser]
             [midje.sweet :refer :all]))
 
-(def path-to-pom (-> "test_pom.xml" io/resource .getPath))
+(def path-to-pom (-> "poms/test_pom.xml" io/resource .getPath))
+(def pom-file (io/file path-to-pom))
 
 (def pom (parser/load-pom path-to-pom))
 
@@ -68,7 +69,7 @@
       (parser/process-dependencies-section pom) => {:dep4 "2.0"})
 
 (fact "Can extract dependencies from pom"
-      (parser/process-pom path-to-pom) =>
+      (parser/process-pom pom-file) =>
 
       {:project-name "projectName",
        :project-version "projectVersion",

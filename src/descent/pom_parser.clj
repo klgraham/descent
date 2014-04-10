@@ -12,18 +12,23 @@
 ;;; Load the pom.xml file and get basic info from it
 
 (defn load-pom [pom-location] (parse (java.io.File. pom-location)))
+(defn load-pom-file [file] (parse file))
 
 
 (defn get-library-name-from-pom
   "Given a pom, extract the project name."
   [pom]
-  (-> pom :content (nth 2) :content first))
+  (->> (:content pom)
+       (filter #(= (:tag %) :name))
+       first :content first))
 
 
 (defn get-library-version-from-pom
   "Given a pom, extract the project version."
   [pom]
-  (-> pom :content (nth 5) :content first))
+  (->> (:content pom)
+       (filter #(= (:tag %) :version))
+       first :content first))
 
 
 ;;; Functions to check if certain pom sections exist
@@ -178,11 +183,10 @@
       first
       clojure.string/trim))
 
-(defn process-pom
-  "Given a pom file, extract it's dependencies and versions and place in a hash-map."
-  [path-to-pom]
-  (let [pom (load-pom path-to-pom)
-        project-name (get-library-name-from-pom pom)
+(defn parse-pom-dependencies
+  "Given a pre-loaded pom file, extract it's dependencies and versions and place in a hash-map."
+  [pom]
+  (let [project-name (get-library-name-from-pom pom)
         version (get-library-version-from-pom pom)
         dep-management (process-dependency-management pom)
         deps (process-dependencies-section pom)
@@ -190,3 +194,9 @@
     {:project-name (parse-project-name project-name)
      :project-version version
      :dependencies dependencies}))
+
+(defn process-pom
+  "Given a pom file, extract it's dependencies and versions and place in a hash-map."
+  [pom-file]
+  (let [pom (load-pom-file pom-file)]
+    (parse-pom-dependencies pom)))
