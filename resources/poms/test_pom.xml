@@ -18,7 +18,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
 		<dep1.version>1.0.0</dep1.version>
-		<dep2.version>1.0.1</dep2.version>
+		<dep2.version>1.0.1-SNAPSHOT</dep2.version>
 		<dep3.version>1.0.2</dep3.version>
 	</properties>
 

@@ -27,9 +27,8 @@
       (parser/get-properties-from-pom pom) =>
 
       [{:tag :dep1.version, :attrs nil, :content ["1.0.0"]},
-       {:tag :dep2.version, :attrs nil, :content ["1.0.1"]},
-       {:tag :dep3.version, :attrs nil, :content ["1.0.2"]}
-       ])
+       {:tag :dep2.version, :attrs nil, :content ["1.0.1-SNAPSHOT"]},
+       {:tag :dep3.version, :attrs nil, :content ["1.0.2"]}])
 
 (parser/group-id-starts-with? "com.acme" "com.acme.dep2")
 
@@ -90,7 +89,7 @@
 
 
 (fact "Can extract dependencies from dependencyManagement"
-      (parser/process-dependency-management pom "") => {:dep1 "1.0.0", :dep2 "1.0.1", :dep3 "1.0.2"})
+      (parser/process-dependency-management pom "") => {:dep1 "1.0.0", :dep2 "1.0.1-snapshot", :dep3 "1.0.2"})
 
 (fact "Can get dependencies from dependencies section"
       (parser/get-deps-from-dependencies-section pom) =>
@@ -111,5 +110,5 @@
        :project-version "projectversion",
        :dependencies {:dep4 "2.0",
                       :dep1 "1.0.0",
-                      :dep2 "1.0.1",
+                      :dep2 "1.0.1-snapshot",
                       :dep3 "1.0.2"}})

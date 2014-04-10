@@ -89,7 +89,9 @@
 
 (defn- parse-name
   [name]
-  (-> (clojure.string/split (str name) #"\.")
+  (-> (clojure.string/lower-case name)
+      str
+      (clojure.string/split #"\.")
       first
       (subs 1)))
 
@@ -127,7 +129,6 @@
           (subs 0 (- length 3))
           (clojure.string/split #"\.")
           first
-          clojure.string/lower-case
           keyword))))
 
 
@@ -165,7 +166,7 @@
         version (-> (:content version-map) first clojure.string/lower-case)]
     [(parse-group-id group-id)
      (if (first-char-is-$? version)
-       (get properties (parse-version-variable version))
+       (clojure.string/lower-case (get properties (parse-version-variable version)))
        version)]))
 
 

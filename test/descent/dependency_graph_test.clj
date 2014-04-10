@@ -10,10 +10,10 @@
             deps (parser/process-pom pom-file "")]
         (g/create-graph deps)) =>
 
-      {"projectname-projectversion" ["dep4-2.0" "dep1-1.0.0" "dep2-1.0.1" "dep3-1.0.2"],
+      {"projectname-projectversion" ["dep4-2.0" "dep1-1.0.0" "dep2-1.0.1-snapshot" "dep3-1.0.2"],
        "dep1-1.0.0" [],
        "dep4-2.0" [],
-       "dep2-1.0.1" [],
+       "dep2-1.0.1-snapshot" [],
        "dep3-1.0.2" []})
 
 (fact "Can combine two pom dependency graphs"
@@ -27,10 +27,10 @@
             g1 (g/create-graph deps1)]
         (g/merge-graphs g g1)) =>
 
-      {"projectname-projectversion" ["dep4-2.0" "dep1-1.0.0" "dep2-1.0.1" "dep3-1.0.2"],
+      {"projectname-projectversion" ["dep4-2.0" "dep1-1.0.0" "dep2-1.0.1-snapshot" "dep3-1.0.2"],
        "dep1-1.0.0" ["dep5-1.2"],
        "dep4-2.0" [],
-       "dep2-1.0.1" [],
+       "dep2-1.0.1-snapshot" [],
        "dep5-1.2" [],
        "dep3-1.0.2" []})
 
@@ -38,17 +38,19 @@
       (let [path-to-poms (-> "poms" io/resource .getPath)]
         (g/build-graph path-to-poms "")) =>
 
-      {"projectname-projectversion" ["dep4-2.0" "dep1-1.0.0" "dep2-1.0.1" "dep3-1.0.2"],
+      {"projectname-projectversion" ["dep4-2.0" "dep1-1.0.0" "dep2-1.0.1-snapshot" "dep3-1.0.2"],
        "dep1-1.0.0" ["dep5-1.2"],
        "dep4-2.0" [],
-       "dep2-1.0.1" [],
+       "dep2-1.0.1-snapshot" ["dep6-2.0"],
        "dep5-1.2" [],
-       "dep3-1.0.2" []})
+       "dep3-1.0.2" [],
+       "dep6-2.0" []})
 
 (fact "Can combine two graphs with dependency filtering"
       (let [path-to-poms (-> "poms" io/resource .getPath)]
         (g/build-graph path-to-poms "com.acme")) =>
 
       {"dep1-1.0.0" [],
-       "projectname-projectversion" ["dep1-1.0.0" "dep2-1.0.1"],
-       "dep2-1.0.1" []})
+       "projectname-projectversion" ["dep1-1.0.0" "dep2-1.0.1-snapshot"],
+       "dep2-1.0.1-snapshot" ["dep6-2.0"],
+       "dep6-2.0" []})
