@@ -1,5 +1,7 @@
 (ns descent.dependency-graph
-  (use [rhizome.viz]))
+  (:use [rhizome.viz])
+  (:require [descent.pom-parser :as parser]))
+
 
 
 ;;;; Given a map of a project's dependencies, and versions, create a graph
@@ -7,10 +9,10 @@
 
 (defn create-graph
   "Places dependencies into a hash-map form used by Rhizome."
-  [{:keys [project-name version dependencies]}]
-  (let [name (str project-name + "-" version)
-        dep-names (into [] (map #(keyword (str (key %) "-" (val %))) dependencies))
-        nodes (hash-map (keyword name) dep-names)
+  [{:keys [project-name project-version dependencies]}]
+  (let [graph-name (str project-name "-" project-version)
+        dep-names (into [] (map #(str (name (key %)) "-" (val %)) dependencies))
+        nodes (hash-map graph-name dep-names)
         dep-nodes (zipmap dep-names (repeat (count dep-names) []))]
     (merge nodes dep-nodes)))
 
@@ -37,4 +39,20 @@
   [file] (load-file file))
 
 
-(defn merge-graphs [g1 g2] (merge g1 g2))
+(defn merge-graphs
+  "Merges two maps that were created by the create-graph function"
+  ([] {})
+  ([g1 g2] (merge-with (comp vec flatten conj) g1 g2)))
+
+(defn build-graph
+  "Given a directory containing at least two interrelated poms,
+  builds a dependency graph for each and combines them into a
+  single dependency graph."
+  [directory prefix]
+  (let [poms (-> (clojure.java.io/file directory)
+                 file-seq
+                 rest
+                 vec)
+        deps-maps (map #(parser/process-pom % prefix) poms)
+        graphs (map create-graph deps-maps)]
+    (reduce merge-graphs graphs)))
