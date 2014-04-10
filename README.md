@@ -1,6 +1,6 @@
 # Descent
 
-As projects grow in complexity, their dependencies often do as well. When release time comes, it may help to know how your various libraries depend on one another. Descent combines Clojure, Datomic, and Rhizome to track project dependencies over time.
+As projects grow in complexity, their dependencies often do as well. When release time comes, it may help to know how your various libraries depend on one another. Descent combines Clojure, Datomic (maybe), and Rhizome to track project dependencies over time.
 
 Have yet to implement the Datomic storage. Will do that soon. For right now, the functionality is as follows:
 
@@ -15,9 +15,7 @@ Have yet to implement the Datomic storage. Will do that soon. For right now, the
 
 ## Usage
 
-FIXME: explanation
-
-    $ java -jar descent-0.1.0-standalone.jar [pom image-name]
+    $ java -jar descent-0.1.0-standalone.jar [pom <group-id prefix to filter on OR use empty string> image-name]
 
 ## Options
 
@@ -28,12 +26,12 @@ FIXME: explanation
 
 ## Bugs
 
-  * Node labels are printing with double colons
-  * Output keys have double colons
+  * All text is not yet lowercase
+  * The nodes are not merging correctly when the graphs are combined
 
 ### Remaining Work
 
-* Add the Datomic functionality
+* Add the storage functionality
 * Add a few CLI options
 
 ## License
