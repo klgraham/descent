@@ -41,8 +41,8 @@
 
 (defn merge-graphs
   "Merges two maps that were created by the create-graph function"
-  [g1 g2]
-  (merge-with (comp vec flatten conj) g1 g2))
+  ([] {})
+  ([g1 g2] (merge-with (comp vec flatten conj) g1 g2)))
 
 (defn build-graph
   "Given a directory containing at least two interrelated poms,
@@ -53,6 +53,6 @@
                  file-seq
                  rest
                  vec)
-        deps-maps (map parser/process-pom poms prefix)
+        deps-maps (map #(parser/process-pom % prefix) poms)
         graphs (map create-graph deps-maps)]
-    (apply merge-graphs (seq graphs))))
+    (reduce merge-graphs graphs)))
