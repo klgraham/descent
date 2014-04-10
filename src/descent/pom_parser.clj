@@ -20,7 +20,8 @@
   [pom]
   (->> (:content pom)
        (filter #(= (:tag %) :name))
-       first :content first))
+       first :content first
+       clojure.string/lower-case))
 
 
 (defn get-library-version-from-pom
@@ -28,7 +29,8 @@
   [pom]
   (->> (:content pom)
        (filter #(= (:tag %) :version))
-       first :content first))
+       first :content first
+       clojure.string/lower-case))
 
 
 ;;; Functions to check if certain pom sections exist
@@ -125,22 +127,42 @@
           (subs 0 (- length 3))
           (clojure.string/split #"\.")
           first
+          clojure.string/lower-case
           keyword))))
 
 
 (defn- parse-group-id
   [gid]
   (-> (clojure.string/split gid #"\.")
-      last keyword))
+      last
+      clojure.string/lower-case
+      keyword))
 
+(defn group-id-starts-with? [prefix group-id]
+  "Given a group id prefix, returns true if the group id contains the prefix."
+  (some? (re-find (re-pattern prefix) group-id)))
+
+(defn dep-has-prefix?
+  [prefix dep]
+  (->> (:content dep)
+       (filter #(= (:tag %) :groupId))
+       first
+       :content
+       first
+       (group-id-starts-with? prefix)))
+
+(defn filter-by-group-id-prefix
+  "Filters out all dependencies with a group id that doesn't match the prefix."
+  [prefix deps]
+  (vec (filter (partial dep-has-prefix? prefix) deps)))
 
 (defn- make-dependency-version-pair
   [m properties]
   (let [{:keys [tag attrs content]} m
         group-id-map (first (filter #(tag-equals? % :groupId) content))
-        group-id (first (:content group-id-map))
+        group-id (-> (:content group-id-map) first clojure.string/lower-case)
         version-map (first (filter #(tag-equals? % :version) content))
-        version (first (:content version-map))]
+        version (-> (:content version-map) first clojure.string/lower-case)]
     [(parse-group-id group-id)
      (if (first-char-is-$? version)
        (get properties (parse-version-variable version))
@@ -148,11 +170,12 @@
 
 
 (defn process-dependency-management
-  [pom]
+  [pom prefix]
   (if (pom-has-dependencyManagement? pom)
     (let [properties (get-dependencies-from-properties pom)
           deps (get-deps-from-dependency-management pom)
-          deps-seq (map #(make-dependency-version-pair % properties) deps)]
+          filtered-deps (filter-by-group-id-prefix prefix deps)
+          deps-seq (map #(make-dependency-version-pair % properties) filtered-deps)]
       (into {} deps-seq))
     nil))
 
@@ -167,11 +190,12 @@
 
 
 (defn process-dependencies-section
-  [pom]
+  [pom prefix]
   (if (pom-has-dependencies? pom)
     (let [properties (get-dependencies-from-properties pom)
           deps (get-deps-from-dependencies-section pom)
-          deps-seq (map #(make-dependency-version-pair % properties) deps)]
+          filtered-deps (filter-by-group-id-prefix prefix deps)
+          deps-seq (map #(make-dependency-version-pair % properties) filtered-deps)]
       (into {} deps-seq))
     nil))
 
@@ -181,15 +205,17 @@
 (defn- parse-project-name [project-name]
   (-> (clojure.string/split project-name #"::")
       first
-      clojure.string/trim))
+      clojure.string/trim
+      clojure.string/lower-case))
 
 (defn parse-pom-dependencies
-  "Given a pre-loaded pom file, extract it's dependencies and versions and place in a hash-map."
-  [pom]
+  "Given a pre-loaded pom file, extract it's dependencies and versions and place in a hash-map.
+  Can also filter out dependencies with group id that doesn't start with a given prefix"
+  [pom prefix]
   (let [project-name (get-library-name-from-pom pom)
         version (get-library-version-from-pom pom)
-        dep-management (process-dependency-management pom)
-        deps (process-dependencies-section pom)
+        dep-management (process-dependency-management pom prefix)
+        deps (process-dependencies-section pom prefix)
         dependencies (merge dep-management deps)]
     {:project-name (parse-project-name project-name)
      :project-version version
@@ -197,6 +223,6 @@
 
 (defn process-pom
   "Given a pom file, extract it's dependencies and versions and place in a hash-map."
-  [pom-file]
+  [pom-file prefix]
   (let [pom (load-pom-file pom-file)]
-    (parse-pom-dependencies pom)))
+    (parse-pom-dependencies pom prefix)))

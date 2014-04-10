@@ -48,11 +48,11 @@
   "Given a directory containing at least two interrelated poms,
   builds a dependency graph for each and combines them into a
   single dependency graph."
-  [directory]
+  [directory prefix]
   (let [poms (-> (clojure.java.io/file directory)
                  file-seq
                  rest
                  vec)
-        deps-maps (map parser/process-pom poms)
+        deps-maps (map parser/process-pom poms prefix)
         graphs (map create-graph deps-maps)]
-    (reduce merge-graphs graphs)))
+    (apply merge-graphs (seq graphs))))

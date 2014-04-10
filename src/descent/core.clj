@@ -10,9 +10,9 @@
   visualization and then print the graph to a file.
 
   Usage: descent.core: <directory with poms> <output-file> [optional arguments]"
-  [poms-dir output-file & args]
-  (let [graph (g/build-graph poms-dir)
+  [poms-dir prefix output-file & args]
+  (let [graph (g/build-graph poms-dir prefix)
         image (g/create-image graph)]
-    ;(pprint graph)
+    (pprint graph)
     (g/save-image-to-file image output-file)
-    (g/save-graph-to-file graph (str "project" ".graph"))))
+    (g/save-graph-to-file graph (str "project-dependencies.graph"))))
