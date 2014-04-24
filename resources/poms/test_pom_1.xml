@@ -15,8 +15,8 @@
 
 	<dependencies>
 		<dependency>
-				<groupId>com.fourthParty.dep5</groupId>
-				<artifactId>dep5-artifact</artifactId>
+				<groupId>com.fourthParty.dep7</groupId>
+				<artifactId>dep7-artifact</artifactId>
 				<version>1.2</version>
 			</dependency>
 

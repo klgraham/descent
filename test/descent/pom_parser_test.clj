@@ -67,6 +67,11 @@
         :content [{:tag :groupId, :attrs nil, :content ["com.thirdParty.dep3"]}
                   {:tag :artifactId, :attrs nil, :content ["dep3-artifact"]}
                   {:tag :version, :attrs nil, :content ["${dep3.version}"]}]}
+       {:attrs nil,
+        :content [{:attrs nil, :content ["com.acme.dep5"], :tag :groupId}
+                  {:attrs nil, :content ["dep5-artifact"], :tag :artifactId}
+                  {:attrs nil, :content ["5.0"], :tag :version}],
+        :tag :dependency}
        ])
 
 
@@ -85,11 +90,16 @@
         :content [{:tag :groupId, :attrs nil, :content ["com.acme.dep2"]}
                   {:tag :artifactId, :attrs nil, :content ["dep2-artifact"]}
                   {:tag :type, :attrs nil, :content ["tar.gz"]}
-                  {:tag :version, :attrs nil, :content ["${dep2.version}"]}]}])
+                  {:tag :version, :attrs nil, :content ["${dep2.version}"]}]}
+       {:attrs nil,
+        :content [{:attrs nil, :content ["com.acme.dep5"], :tag :groupId}
+                  {:attrs nil, :content ["dep5-artifact"], :tag :artifactId}
+                  {:attrs nil, :content ["5.0"], :tag :version}],
+        :tag :dependency}])
 
 
 (fact "Can extract dependencies from dependencyManagement"
-      (parser/process-dependency-management pom "") => {:dep1 "1.0.0", :dep2 "1.0.1-snapshot", :dep3 "1.0.2"})
+      (parser/process-dependency-management pom "") => {:dep1 "1.0.0", :dep2 "1.0.1-snapshot", :dep3 "1.0.2", :dep5 "5.0"})
 
 (fact "Can get dependencies from dependencies section"
       (parser/get-deps-from-dependencies-section pom) =>
@@ -111,4 +121,5 @@
        :dependencies {:dep4 "2.0",
                       :dep1 "1.0.0",
                       :dep2 "1.0.1-snapshot",
-                      :dep3 "1.0.2"}})
+                      :dep3 "1.0.2",
+                      :dep5 "5.0"}})

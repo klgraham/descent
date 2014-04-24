@@ -41,6 +41,11 @@
 				<artifactId>dep3-artifact</artifactId>
 				<version>${dep3.version}</version>
 			</dependency>
+      <dependency>
+				<groupId>com.acme.dep5</groupId>
+				<artifactId>dep5-artifact</artifactId>
+				<version>5.0</version>
+			</dependency>
 
 		</dependencies>
 	</dependencyManagement>
