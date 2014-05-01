@@ -23,7 +23,8 @@
 (defn create-image
   [g]
   (graph->image (keys g) g
-                :node->descriptor (fn [n] {:label n})))
+                :node->descriptor (fn [n] {:label n})
+                :vertical? false))
 
 
 (defn save-image-to-file
