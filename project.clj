@@ -1,5 +1,5 @@
 (defproject descent "1.0"
-  :description "Track and visualize project dependencies over time, with Clojure, Datomic, and Rhizome."
+  :description "Track and visualize project dependencies."
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}

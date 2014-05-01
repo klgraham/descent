@@ -2,6 +2,8 @@
 
 As projects grow in complexity, their dependencies often do as well. When release time comes, it may help to know how your various libraries depend on one another. Descent lets you visualize project dependencies.
 
+[![Build Status](https://travis-ci.org/klgraham/descent.svg?branch=master)](https://travis-ci.org/klgraham/descent)
+
 ## Installation
 
   1. Download from https://github.com/klgraham/descent.
