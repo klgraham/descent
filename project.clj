@@ -13,4 +13,4 @@
             [lein-midje "3.1.1"]]
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}
-             :dev {:dependencies [[midje "1.5.1"]]}})
+             :dev {:dependencies [[midje "1.6.3"]]}})
